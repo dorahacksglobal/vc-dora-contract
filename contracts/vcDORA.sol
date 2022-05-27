@@ -218,7 +218,14 @@ contract vcDORA {
 
         if (_value != 0) {
             require(
-                token.transferFrom(_user, address(this), _value),
+                /// In the veCrv original contract here, the token is transferred
+                /// from the `_user`. This enables anyone to stake all the tokens
+                /// of any other user through method `depositFor`. Unless this user
+                /// have insufficient balance or allowance.
+                /// After modification, the behavior of `depositFor` should be
+                /// considered as a reward or gift.
+                token.transferFrom(msg.sender, address(this), _value),
+                // token.transferFrom(_user, address(this), _value),
                 'ERC20 transfer error'
             );
         }
@@ -311,7 +318,7 @@ contract vcDORA {
 
         _depositFor(
             msg.sender,
-            _locked.amount,
+            0,
             _unlockTime,
             _locked,
             LockedType.INCREASE_UNLOCK_TIME
