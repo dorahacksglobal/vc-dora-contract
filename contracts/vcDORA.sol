@@ -209,10 +209,8 @@ contract vcDORA {
         uint256 prevSupply = supply;
         supply = prevSupply + _value;
 
-        LockedBalance memory newLocked = LockedBalance(
-            _locked.amount + _value,
-            _unlockTime
-        );
+        uint256 amount = _locked.amount + _value;
+        LockedBalance memory newLocked = LockedBalance(amount, _unlockTime);
 
         _checkUserPoint(_user, _locked, newLocked);
 
@@ -230,7 +228,7 @@ contract vcDORA {
             );
         }
 
-        emit Deposit(_user, _value, _unlockTime, _type, block.timestamp);
+        emit Deposit(_user, amount, _unlockTime, _type, block.timestamp);
         emit Supply(prevSupply, supply);
     }
 
