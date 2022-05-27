@@ -159,9 +159,11 @@ contract vcDORA {
         pointNow.bias -= pointNow.slope * int256(block.timestamp - pointNow.ts);
         pointNow.ts = block.timestamp;
 
-        // require(_newLocked.end >= _oldLocked.end, "ALWAYS");
-        // require(_newLocked.end >= block.timestamp, "ALWAYS");
-        // require(_newLocked.amount >= _oldLocked.amount, "ALWAYS");
+        // require(_newLocked.end >= _oldLocked.end, "STAKE");
+        // require(_newLocked.end >= block.timestamp, "STAKE");
+        // require(_newLocked.amount >= _oldLocked.amount, "STAKE");
+        // or
+        // require(_newLocked.amount === 0 && _newLocked.end === 0, "WITHDRAW");
 
         if (_oldLocked.end > block.timestamp) {
             // old locked not ended
@@ -175,13 +177,17 @@ contract vcDORA {
             slopeChanges[_oldLocked.end] += oldSlope;
         }
 
-        int256 newSlope = int256(_newLocked.amount / MAXTIME);
-        int256 newBias = newSlope * int256(_newLocked.end - block.timestamp);
+        int256 newSlope;
+        int256 newBias;
+        if (_newLocked.end > block.timestamp) {
+            newSlope = int256(_newLocked.amount / MAXTIME);
+            newBias = newSlope * int256(_newLocked.end - block.timestamp);
 
-        pointNow.bias += newBias;
-        pointNow.slope += newSlope;
+            pointNow.bias += newBias;
+            pointNow.slope += newSlope;
 
-        slopeChanges[_newLocked.end] -= newSlope;
+            slopeChanges[_newLocked.end] -= newSlope;
+        }
 
         locked[_user] = _newLocked;
         uint256 uEpoch = userPointEpoch[_user] + 1;
@@ -314,6 +320,8 @@ contract vcDORA {
 
     function withdraw() external nonReentrant {
         LockedBalance storage _locked = locked[msg.sender];
+
+        require(block.timestamp >= _locked.end, "The lock didn't expire");
 
         uint256 value = _locked.amount;
 
