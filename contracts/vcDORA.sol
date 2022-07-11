@@ -77,6 +77,7 @@ contract vcDORA {
     // epoch -> unsigned point
     mapping(uint256 => Point) public pointHistory;
 
+    // epoch -> change
     mapping(uint256 => int256) public slopeChanges;
 
     // user -> user_epoch -> Point
@@ -96,11 +97,19 @@ contract vcDORA {
         _rentrancyLock = false;
     }
 
+    constructor(
+        ERC20 _token,
+        string memory _name,
+        string memory _symbol
+    ) {
+        init(_token, _name, _symbol);
+    }
+
     function init(
         ERC20 _token,
         string memory _name,
         string memory _symbol
-    ) external {
+    ) public {
         require(admin == address(0));
         admin = msg.sender;
 
@@ -174,7 +183,7 @@ contract vcDORA {
             pointNow.bias -= oldBias;
             pointNow.slope -= oldSlope;
 
-            slopeChanges[_oldLocked.end] += oldSlope;
+            slopeChanges[_oldLocked.end / WEEK] += oldSlope;
         }
 
         int256 newSlope;
@@ -186,7 +195,7 @@ contract vcDORA {
             pointNow.bias += newBias;
             pointNow.slope += newSlope;
 
-            slopeChanges[_newLocked.end] -= newSlope;
+            slopeChanges[_newLocked.end / WEEK] -= newSlope;
         }
 
         locked[_user] = _newLocked;
@@ -302,6 +311,8 @@ contract vcDORA {
 
     function increaseUnlockTime(uint256 _unlockTime) external nonReentrant {
         LockedBalance storage _locked = locked[msg.sender];
+
+        _unlockTime = (_unlockTime / WEEK) * WEEK;
 
         require(_locked.amount > 0, 'No existing lock found');
         require(
@@ -435,7 +446,7 @@ contract vcDORA {
             if (ti == _ts) {
                 break;
             }
-            slope += slopeChanges[ti];
+            slope += slopeChanges[ti / WEEK];
             ts = ti;
         }
 
