@@ -382,13 +382,7 @@ contract vcDORA {
     }
 
     function balanceOf(address _user) external view returns (uint256) {
-        uint256 uEpoch = userPointEpoch[_user];
-        if (uEpoch == 0) {
-            return 0;
-        } else {
-            Point storage uPoint = userPointHistory[_user][uEpoch];
-            return _posInterpolation(uPoint, block.timestamp);
-        }
+        return balanceOfAtFuture(_user, block.timestamp);
     }
 
     function balanceOfAt(address _user, uint256 _ts)
@@ -424,6 +418,22 @@ contract vcDORA {
         Point storage uPoint = _userPointHistory[min];
 
         return _posInterpolation(uPoint, _ts);
+    }
+
+    function balanceOfAtFuture(address _user, uint256 _ts)
+        public
+        view
+        returns (uint256)
+    {
+        require(_ts >= block.timestamp);
+
+        uint256 uEpoch = userPointEpoch[_user];
+        if (uEpoch == 0) {
+            return 0;
+        } else {
+            Point storage uPoint = userPointHistory[_user][uEpoch];
+            return _posInterpolation(uPoint, _ts);
+        }
     }
 
     function _supplyAt(Point storage _p, uint256 _ts)
