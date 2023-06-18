@@ -1,0 +1,45 @@
+{
+	"compiler": {
+		"version": "0.8.14+commit.80d49f37"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/vcDORA.sol": "AddressUtils"
+		},
+		"evmVersion": "london",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"contracts/vcDORA.sol": {
+			"keccak256": "0x739411a3d80eb0cf242f0f3746da3c0153533a2894a503373a336380aed826a2",
+			"license": "UNLICENSED",
+			"urls": [
+				"bzz-raw://b6e110a24d1a02e2edc27d05c4a997f0549efce22b5d7f0fa92e281997aafa94",
+				"dweb:/ipfs/QmXAr6oc8gFYUt8zeJzubudcUk4k2nXkACvbrmc5aSBCWW"
+			]
+		}
+	},
+	"version": 1
+}

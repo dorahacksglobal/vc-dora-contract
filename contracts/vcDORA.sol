@@ -150,10 +150,13 @@ contract vcDORA {
             int256 prevBias = lastPoint.bias;
             int256 prevSlope = lastPoint.slope;
 
+            uint256 newTs = epoch * WEEK;
+            uint256 dTs = newTs - lastPoint.ts;
+
             lastPoint = pointHistory[epoch];
-            lastPoint.bias = prevBias - prevSlope * int256(WEEK);
+            lastPoint.bias = prevBias - prevSlope * int256(dTs);
             lastPoint.slope = prevSlope + slopeChanges[epoch];
-            lastPoint.ts = epoch * WEEK;
+            lastPoint.ts = newTs;
         }
 
         return lastPoint;
@@ -414,6 +417,8 @@ contract vcDORA {
                 max = mid - 1;
             }
         }
+
+        require(min >= max);
 
         Point storage uPoint = _userPointHistory[min];
 
